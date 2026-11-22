@@ -27,3 +27,19 @@ def schedule(item):
 def delivery(item):
     return {'id': item.id, 'run_id': item.run_id, 'recipient': item.recipient,
             'state': item.state, 'detail': item.detail, 'created_at': iso(item.created_at)}
+
+
+def publication(item):
+    return {'id': item.id, 'dataset_id': item.dataset_id, 'day': item.day.isoformat(),
+            'markets': item.markets, 'total': item.total, 'state': item.state,
+            'detail': item.detail, 'applicant': item.applicant, 'reviewer': item.reviewer,
+            'created_at': iso(item.created_at), 'decided_at': iso(item.decided_at),
+            'has_export': bool(item.state == 'approved')}
+
+
+def public_totals(item):
+    """公开区只暴露合计本身，不含申请人等内部字段。"""
+    return {'id': item.id, 'day': item.day.isoformat(), 'markets': item.markets,
+            'total': item.total, 'decided_at': iso(item.decided_at),
+            'download': f'/publications/{item.id}/export'}
+

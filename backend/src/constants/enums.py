@@ -15,3 +15,9 @@ class Review(StrEnum):
     PENDING = 'pending'
     ACCEPTED = 'accepted'
     RETURNED = 'returned'
+
+class PublicationState(StrEnum):
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+    WITHDRAWN = 'withdrawn'
+    FAILED = 'failed'

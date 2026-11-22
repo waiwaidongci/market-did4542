@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime
 from sqlalchemy import JSON, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from src.config.database import Base
-from src.constants.enums import Review, Status
+from src.constants.enums import PublicationState, Review, Status
 from src.utils.time import now
 
 class Schedule(Base):
@@ -50,3 +50,26 @@ class Delivery(Base):
     state: Mapped[str] = mapped_column(String(20))
     detail: Mapped[str] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(default=now)
+
+
+class Publication(Base):
+    """一次对外发布申请：所选市场在某天的平均等候分钟合计。
+
+    同一批底稿、同一天、同一组市场只登记一次；申请失败后重试沿用原记录。
+    """
+
+    __tablename__ = 'publications'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    fingerprint: Mapped[str] = mapped_column(String(64), unique=True)
+    dataset_id: Mapped[int] = mapped_column(ForeignKey('datasets.id'))
+    day: Mapped[date] = mapped_column(index=True)
+    markets: Mapped[list] = mapped_column(JSON)
+    total: Mapped[float]
+    state: Mapped[str] = mapped_column(String(20), index=True)
+    detail: Mapped[str | None] = mapped_column(String(500))
+    applicant: Mapped[str] = mapped_column(String(64))
+    reviewer: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(default=now)
+    decided_at: Mapped[datetime | None]
+
